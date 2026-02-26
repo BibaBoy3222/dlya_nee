@@ -98,6 +98,33 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+// ---- Приветственное окно ----
+const welcomeModal = document.getElementById('welcomeModal');
+const startMusicBtn = document.getElementById('startMusicBtn');
+
+// Показываем окно при загрузке (если музыка ещё не была активирована)
+if (welcomeModal) {
+    welcomeModal.style.display = 'flex';
+}
+
+if (startMusicBtn && bgMusic) {
+    startMusicBtn.addEventListener('click', function() {
+        // Снимаем mute и запускаем музыку, если она на паузе
+        bgMusic.muted = false;
+        if (bgMusic.paused) {
+            bgMusic.play().then(() => {
+                musicIcon.textContent = '🔊';
+                musicPlaying = true;
+                console.log('Музыка запущена по кнопке');
+            }).catch(e => console.log('Ошибка запуска музыки', e));
+        } else {
+            musicIcon.textContent = '🔊';
+        }
+        // Закрываем окно
+        welcomeModal.style.display = 'none';
+    });
+}
+
     // ---- Функция закрытия фото/видео модалки ----
     function closeModal() {
         if (modal) {
@@ -182,3 +209,39 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// ---- Карта наших мест (Leaflet) ----
+if (document.getElementById('map')) {
+    // Координаты центра карты (можно выставить примерно по середине ваших мест)
+    var map = L.map('map').setView([55.751244, 37.618423], 10); // Москва, замени на свой город
+
+    // Бесплатные тайлы OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    // ---- Добавляй свои маркеры сюда ----
+    // Пример: место первой встречи
+    L.marker([45.01392772756214, 38.92922389718127]).addTo(map)
+        .bindPopup('<b>❤️ Здесь мы встретились</b><br>Тот самый день')
+        .openPopup();
+
+    // Пример: любимое кафе
+    L.marker([44.89864480237702, 37.30580103119168]).addTo(map)
+        .bindPopup('☕ Где-то тут мы гуляли и я влюблялся');
+
+    // Пример: парк, где гуляли
+    L.marker([43.89988513065413, 39.33981843673775]).addTo(map)
+        .bindPopup('🌳 Место где мы провели лето');
+
+    // Пример: парк, где гуляли
+    L.marker([43.687691582244916, 40.25022306150212]).addTo(map)
+        .bindPopup('Сюда я приехал и мы снова влюбились');
+
+    // Пример: парк, где гуляли
+    L.marker([43.274022728132685, 40.26985700117345]).addTo(map)
+        .bindPopup('Тут я совершил ошибки, о которых жалел, но я так сильно любил');
+
+    // Добавь столько маркеров, сколько нужно
+    // Координаты можно найти, например, в Google Maps: клик правой кнопкой по месту → "Что здесь?" → скопировать числа
+}
