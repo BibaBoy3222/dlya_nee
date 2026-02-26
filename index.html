@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Для тебя ❤️</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <!-- Подключаем красивые шрифты -->
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Cormorant+Garamond:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
@@ -16,7 +18,7 @@
         <p class="subtitle">Не из сомнений, а из уверенности в том что я тебе нужен</p>
         <p class="subtitle">Не ради эмоций, а ради пути вместе</p>
         <p class="subtitle">В богатстве или бедности, в радости и испытаниях</p>
-        <p class="subtitle">Я не держу тебя. Но если быть - то по настоящему</p>
+        <p class="subtitle">Я не держу тебя. Но есть быть - то по настоящему</p>
 
         <!-- КНОПКА ДЛЯ ПИСЬМА -->
         <div class="letter-button-container">
@@ -172,6 +174,10 @@
         </div>
     </div> <!-- закрыли container -->
 
+    <!-- Раздел с картой -->
+<h2 class="section-title">Наши места</h2>
+<div id="map" style="width: 100%; height: 450px; border-radius: 25px; margin-bottom: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);"></div>
+
     <!-- Модальное окно для просмотра фото и видео -->
     <div id="modal" class="modal">
         <span class="close">&times;</span>
@@ -214,8 +220,16 @@
         <span id="musicIcon">🔊</span>
     </div>
 
+    <!-- Приветственное модальное окно -->
+<div id="welcomeModal" class="modal">
+    <div class="welcome-content">
+        <h2>❤️ Привет, любимая ❤️</h2>
+        <p>Этот сайт — наша маленькая вселенная воспоминаний. Чтобы погружение было полным, включи нашу особенную музыку.</p>
+        <button id="startMusicBtn" class="heart-button">🎵 Включить музыку</button>
+    </div>
+</div>
+
     <script src="js/script.js"></script>
 </body>
-
 </html>
 
