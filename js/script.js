@@ -16,24 +16,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const musicControl = document.getElementById('musicControl');
     const musicIcon = document.getElementById('musicIcon');
 
-    // ----- Инициализация музыки: попытка автозапуска (muted) -----
-    let musicEnabled = false;      // была ли музыка включена (со звуком) до открытия видео
-    let musicPlaying = false;      // играет ли сейчас (с учётом muted)
-    let userInteracted = false;    // был ли первый клик
+    // ----- Инициализация музыки -----
+    let musicEnabled = false;
+    let musicPlaying = false;
+    let userInteracted = false;
 
     if (bgMusic) {
-        // Убедимся, что звук отключён (muted) для автозапуска
         bgMusic.muted = true;
-        // Пытаемся запустить воспроизведение
         const playPromise = bgMusic.play();
         if (playPromise !== undefined) {
             playPromise.then(() => {
-                // Воспроизведение началось (без звука)
                 musicPlaying = true;
                 musicIcon.textContent = '🔇';
                 console.log('Музыка запущена (без звука)');
             }).catch(error => {
-                // Автозапуск не удался — возможно, браузер заблокировал
                 console.log('Автозапуск музыки не удался:', error);
                 musicIcon.textContent = '🔇';
                 musicPlaying = false;
@@ -41,7 +37,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Функция для включения звука (unmute) при первом взаимодействии
     function enableSound() {
         if (!bgMusic) return;
         if (bgMusic.muted) {
@@ -49,19 +44,21 @@ document.addEventListener('DOMContentLoaded', function() {
             musicIcon.textContent = '🔊';
             musicPlaying = true;
             userInteracted = true;
+            musicControl.classList.add('playing');
         }
     }
 
-    // Функция воспроизведения (если музыка на паузе) с учётом muted
     function playMusic() {
         if (!bgMusic) return;
         bgMusic.play().then(() => {
             musicIcon.textContent = bgMusic.muted ? '🔇' : '🔊';
             musicPlaying = true;
+            if (!bgMusic.muted) musicControl.classList.add('playing');
         }).catch(e => {
             console.log('Не удалось воспроизвести музыку:', e);
             musicIcon.textContent = '🔇';
             musicPlaying = false;
+            musicControl.classList.remove('playing');
         });
     }
 
@@ -70,17 +67,18 @@ document.addEventListener('DOMContentLoaded', function() {
             bgMusic.pause();
             musicPlaying = false;
             musicIcon.textContent = '🔇';
+            musicControl.classList.remove('playing');
         }
     }
 
-    // При первом клике на страницу включаем звук (unmute)
+    // При первом клике на страницу включаем звук
     document.body.addEventListener('click', function() {
         if (!userInteracted) {
             enableSound();
         }
     }, { once: true });
 
-    // Управление музыкой по кнопке (вкл/выкл звук)
+    // Управление музыкой по кнопке
     if (musicControl && bgMusic) {
         musicControl.addEventListener('click', function(e) {
             e.stopPropagation();
@@ -90,40 +88,41 @@ document.addEventListener('DOMContentLoaded', function() {
                     playMusic();
                 } else {
                     musicIcon.textContent = '🔊';
+                    musicControl.classList.add('playing');
                 }
             } else {
                 bgMusic.muted = true;
                 musicIcon.textContent = '🔇';
+                musicControl.classList.remove('playing');
             }
         });
     }
 
-// ---- Приветственное окно ----
-const welcomeModal = document.getElementById('welcomeModal');
-const startMusicBtn = document.getElementById('startMusicBtn');
+    // ---- Приветственное окно ----
+    const welcomeModal = document.getElementById('welcomeModal');
+    const startMusicBtn = document.getElementById('startMusicBtn');
 
-// Показываем окно при загрузке (если музыка ещё не была активирована)
-if (welcomeModal) {
-    welcomeModal.style.display = 'flex';
-}
+    if (welcomeModal) {
+        welcomeModal.style.display = 'flex';
+    }
 
-if (startMusicBtn && bgMusic) {
-    startMusicBtn.addEventListener('click', function() {
-        // Снимаем mute и запускаем музыку, если она на паузе
-        bgMusic.muted = false;
-        if (bgMusic.paused) {
-            bgMusic.play().then(() => {
+    if (startMusicBtn && bgMusic) {
+        startMusicBtn.addEventListener('click', function() {
+            bgMusic.muted = false;
+            if (bgMusic.paused) {
+                bgMusic.play().then(() => {
+                    musicIcon.textContent = '🔊';
+                    musicPlaying = true;
+                    musicControl.classList.add('playing');
+                    console.log('Музыка запущена по кнопке');
+                }).catch(e => console.log('Ошибка запуска музыки', e));
+            } else {
                 musicIcon.textContent = '🔊';
-                musicPlaying = true;
-                console.log('Музыка запущена по кнопке');
-            }).catch(e => console.log('Ошибка запуска музыки', e));
-        } else {
-            musicIcon.textContent = '🔊';
-        }
-        // Закрываем окно
-        welcomeModal.style.display = 'none';
-    });
-}
+                musicControl.classList.add('playing');
+            }
+            welcomeModal.style.display = 'none';
+        });
+    }
 
     // ---- Функция закрытия фото/видео модалки ----
     function closeModal() {
@@ -139,12 +138,10 @@ if (startMusicBtn && bgMusic) {
         }
     }
 
-    // Закрытие по крестику
     if (closeBtn && modal) {
         closeBtn.addEventListener('click', closeModal);
     }
 
-    // Закрытие по клику на фон
     if (modal) {
         modal.addEventListener('click', function(e) {
             if (e.target === modal) {
@@ -196,7 +193,6 @@ if (startMusicBtn && bgMusic) {
         });
     }
 
-    // Закрытие письма
     if (closeLetter && letterModal) {
         closeLetter.addEventListener('click', function() {
             letterModal.style.display = 'none';
@@ -208,40 +204,57 @@ if (startMusicBtn && bgMusic) {
             }
         });
     }
+
+    // ---- Карта с кастомными маркерами (сердечки) ----
+    if (document.getElementById('map')) {
+        // Кастомная иконка-сердечко
+        var heartIcon = L.divIcon({
+            className: 'custom-heart-icon',
+            html: '❤️',
+            iconSize: [30, 30],
+            popupAnchor: [0, -15]
+        });
+
+        var map = L.map('map').setView([44.5, 39.0], 8); // центр Краснодарского края
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // Массив с местами
+        var places = [
+            { coords: [45.0139, 38.9292], text: '<b>❤️ Здесь мы встретились</b><br>Тот самый день' },
+            { coords: [44.8986, 37.3058], text: '☕ Где-то тут мы гуляли и я влюблялся' },
+            { coords: [43.8999, 39.3398], text: '🌳 Место где мы провели лето' },
+            { coords: [43.6877, 40.2502], text: 'Сюда я приехал и мы снова влюбились' },
+            { coords: [43.2740, 40.2699], text: 'Тут я совершил ошибки, о которых жалел, но я так сильно любил' }
+        ];
+
+        places.forEach(place => {
+            L.marker(place.coords, { icon: heartIcon }).addTo(map)
+                .bindPopup(place.text, {
+                    className: 'heart-popup',
+                    closeButton: false
+                });
+        });
+
+        // Стили для попапов (можно добавить в CSS, но оставлю здесь для наглядности)
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .heart-popup .leaflet-popup-content-wrapper {
+                background: #fff0f5;
+                color: #b91c4b;
+                border-radius: 20px;
+                border: 2px solid #f9a8d4;
+                font-family: 'Cormorant Garamond', serif;
+                font-size: 1.2rem;
+                text-align: center;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            }
+            .heart-popup .leaflet-popup-tip {
+                background: #f9a8d4;
+            }
+        `;
+        document.head.appendChild(style);
+    }
 });
-
-// ---- Карта наших мест (Leaflet) ----
-if (document.getElementById('map')) {
-    // Координаты центра карты (можно выставить примерно по середине ваших мест)
-    var map = L.map('map').setView([55.751244, 37.618423], 10); // Москва, замени на свой город
-
-    // Бесплатные тайлы OpenStreetMap
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap'
-    }).addTo(map);
-
-    // ---- Добавляй свои маркеры сюда ----
-    // Пример: место первой встречи
-    L.marker([45.01392772756214, 38.92922389718127]).addTo(map)
-        .bindPopup('<b>❤️ Здесь мы встретились</b><br>Тот самый день')
-        .openPopup();
-
-    // Пример: любимое кафе
-    L.marker([44.89864480237702, 37.30580103119168]).addTo(map)
-        .bindPopup('☕ Где-то тут мы гуляли и я влюблялся');
-
-    // Пример: парк, где гуляли
-    L.marker([43.89988513065413, 39.33981843673775]).addTo(map)
-        .bindPopup('🌳 Место где мы провели лето');
-
-    // Пример: парк, где гуляли
-    L.marker([43.687691582244916, 40.25022306150212]).addTo(map)
-        .bindPopup('Сюда я приехал и мы снова влюбились');
-
-    // Пример: парк, где гуляли
-    L.marker([43.274022728132685, 40.26985700117345]).addTo(map)
-        .bindPopup('Тут я совершил ошибки, о которых жалел, но я так сильно любил');
-
-    // Добавь столько маркеров, сколько нужно
-    // Координаты можно найти, например, в Google Maps: клик правой кнопкой по месту → "Что здесь?" → скопировать числа
-}
