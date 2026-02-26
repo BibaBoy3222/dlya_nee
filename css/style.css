@@ -10,6 +10,29 @@ body {
     background: linear-gradient(135deg, #fdf2f8 0%, #ffe4e6 100%);
     color: #4a4a4a;
     line-height: 1.6;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Анимированные сердечки на фоне */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.1"><text x="10" y="20" font-size="20">❤️</text><text x="80" y="40" font-size="25">❤️</text><text x="30" y="80" font-size="18">❤️</text><text x="70" y="90" font-size="22">❤️</text><text x="40" y="30" font-size="28">❤️</text><text x="90" y="70" font-size="15">❤️</text></svg>');
+    background-repeat: repeat;
+    background-size: 150px 150px;
+    animation: floatHearts 60s linear infinite;
+    z-index: -1;
+}
+
+@keyframes floatHearts {
+    0% { background-position: 0 0; }
+    100% { background-position: 300px 300px; }
 }
 
 .container {
@@ -17,26 +40,100 @@ body {
     margin: 0 auto;
     padding: 20px;
     box-sizing: border-box;
+    position: relative;
+    z-index: 1;
 }
 
+/* Заголовок */
 h1 {
     text-align: center;
-    font-size: 2.5rem;
+    font-size: 3rem;
     color: #b91c4b;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.05);
+    font-family: 'Pacifico', cursive;
+    position: relative;
+    display: inline-block;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+h1::after {
+    content: '';
+    display: block;
+    width: 80%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #f9a8d4, transparent);
+    margin: 10px auto 0;
+    border-radius: 3px;
+}
+
+/* Блок подзаголовков */
+.subtitle-block {
+    text-align: center;
+    margin-bottom: 40px;
+    background: rgba(255, 255, 255, 0.3);
+    padding: 20px;
+    border-radius: 50px;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
 }
 
 .subtitle {
-    text-align: center;
     font-size: 1.2rem;
     color: #7f4f6b;
-    margin-bottom: 40px;
     font-style: italic;
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
-/* Контейнер для карточек — горизонтальный скролл */
-.memories {
+.subtitle::before,
+.subtitle::after {
+    content: '❤️';
+    font-size: 1rem;
+    opacity: 0.7;
+}
+
+/* Кнопка письма с пульсацией */
+.letter-button-container {
+    text-align: center;
+    margin: 40px 0;
+}
+
+.heart-button {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+    border: none;
+    color: white;
+    padding: 18px 40px;
+    font-size: 1.8rem;
+    font-family: 'Pacifico', cursive;
+    border-radius: 50px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 2px solid white;
+    letter-spacing: 2px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+    50% { transform: scale(1.05); box-shadow: 0 15px 30px rgba(249, 168, 212, 0.5); }
+    100% { transform: scale(1); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+}
+
+.heart-button:hover {
+    animation: none;
+    transform: scale(1.1);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+/* ===== КОНТЕЙНЕРЫ ДЛЯ ГОРИЗОНТАЛЬНОГО СКРОЛЛА ===== */
+.memories, .videos {
     display: flex;
     flex-wrap: nowrap;
     gap: 30px;
@@ -46,45 +143,48 @@ h1 {
     -webkit-overflow-scrolling: touch;
     scroll-snap-type: x mandatory;
     justify-content: flex-start;
+    margin-bottom: 40px; /* добавил отступ снизу */
 }
 
-/* Карточка фото */
-.memory-card {
+/* Карточка фото и видео (общие стили) */
+.memory-card, .video-card {
     background: white;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border-radius: 25px;
+    box-shadow: 0 15px 35px rgba(181, 28, 75, 0.1);
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     flex-shrink: 0;
     scroll-snap-align: start;
     max-width: 90vw;
     display: flex;
     flex-direction: column;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(2px);
 }
 
-.memory-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+.memory-card:hover, .video-card:hover {
+    transform: translateY(-15px) scale(1.02);
+    box-shadow: 0 30px 50px rgba(185, 28, 75, 0.3);
+    border-color: #f9a8d4;
 }
 
-/* Изображение внутри карточки фото */
-.memory-card img {
-    width: auto;
-    max-width: 100%;
-    max-height: 60vh;      /* фото занимает до 60% высоты экрана */
+/* Изображения в карточках */
+.memory-card img, .video-card img {
+    width: 100%;
     height: auto;
-    display: block;
-    object-fit: contain;
+    max-height: 60vh;
+    object-fit: cover;
     border-bottom: 3px solid #f9a8d4;
-    flex-shrink: 0;
-    margin: 0 auto;
-    cursor: pointer;
+    transition: transform 0.5s ease;
+}
+
+.memory-card:hover img, .video-card:hover img {
+    transform: scale(1.05);
 }
 
 /* Информационный блок фото */
 .memory-info {
     padding: 20px;
-    overflow-y: auto;
     flex-grow: 1;
 }
 
@@ -92,20 +192,16 @@ h1 {
     font-size: 1.5rem;
     color: #b91c4b;
     margin-bottom: 5px;
-}
-
-.memory-info .date {
-    font-size: 0.9rem;
-    color: #9b5e7e;
-    margin-bottom: 10px;
-    font-weight: 600;
+    font-family: 'Pacifico', cursive;
 }
 
 .memory-info p {
     color: #5a5a5a;
+    font-size: 1rem;
+    line-height: 1.4;
 }
 
-/* Заголовок раздела видео */
+/* Заголовок раздела */
 .section-title {
     font-size: 2rem;
     color: #b91c4b;
@@ -113,53 +209,34 @@ h1 {
     text-align: center;
     border-bottom: 2px solid #f9a8d4;
     padding-bottom: 10px;
+    font-family: 'Pacifico', cursive;
 }
 
-/* Контейнер для видео-карточек (горизонтальный скролл) */
-.videos {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 30px;
-    overflow-x: auto;
-    padding: 20px 20px 40px;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x mandatory;
-    margin-bottom: 40px;
-}
-
-/* Карточка видео */
+/* Специально для видео: добавляем значок play */
 .video-card {
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    flex-shrink: 0;
-    scroll-snap-align: start;
-    max-width: 90vw;
-    display: flex;
-    flex-direction: column;
-    cursor: pointer;
+    position: relative;
 }
 
-.video-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+.video-card::after {
+    content: '▶️';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 4rem;
+    color: white;
+    text-shadow: 0 0 20px rgba(0,0,0,0.5);
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 2;
 }
 
-/* Изображение-превью видео */
-.video-card img {
-    width: auto;
-    max-width: 100%;
-    max-height: 70vh;       /* крупное превью — 70% высоты экрана */
-    min-height: 300px;      /* но не меньше 300px */
-    height: auto;
-    display: block;
-    object-fit: cover;
-    border-bottom: 3px solid #f9a8d4;
+.video-card:hover::after {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
 }
 
-/* Информация под видео */
 .video-info {
     padding: 15px;
     flex-grow: 1;
@@ -169,6 +246,7 @@ h1 {
     font-size: 1.3rem;
     color: #b91c4b;
     margin-bottom: 5px;
+    font-family: 'Pacifico', cursive;
 }
 
 .video-info p {
@@ -176,44 +254,22 @@ h1 {
     font-size: 0.95rem;
 }
 
-/* Адаптация для мобильных */
-@media (max-width: 700px) {
-    h1 {
-        font-size: 2rem;
-    }
-    .memories, .videos {
-        gap: 15px;
-    }
-    .memory-card img {
-        max-height: 50vh;
-    }
-    .video-card img {
-        max-height: 40vh;    /* на мобильных превью чуть меньше */
-        min-height: 200px;
-    }
+/* ===== КАРТА ===== */
+#map {
+    width: 100%;
+    height: 450px;
+    border-radius: 35px;
+    margin-bottom: 50px;
+    box-shadow: 0 20px 40px rgba(185, 28, 75, 0.2);
+    border: 4px solid white;
+    transition: box-shadow 0.3s ease;
 }
 
-/* Стилизация полосы прокрутки */
-.memories::-webkit-scrollbar,
-.videos::-webkit-scrollbar {
-    height: 8px;
-}
-.memories::-webkit-scrollbar-track,
-.videos::-webkit-scrollbar-track {
-    background: #ffe4e6;
-    border-radius: 10px;
-}
-.memories::-webkit-scrollbar-thumb,
-.videos::-webkit-scrollbar-thumb {
-    background: #f9a8d4;
-    border-radius: 10px;
-}
-.memories::-webkit-scrollbar-thumb:hover,
-.videos::-webkit-scrollbar-thumb:hover {
-    background: #f472b6;
+#map:hover {
+    box-shadow: 0 30px 60px rgba(185, 28, 75, 0.3);
 }
 
-/* ===== МОДАЛЬНОЕ ОКНО ===== */
+/* ===== МОДАЛЬНЫЕ ОКНА ===== */
 .modal {
     display: none;
     position: fixed;
@@ -237,7 +293,7 @@ h1 {
     box-shadow: 0 0 30px rgba(0,0,0,0.5);
 }
 
-.close {
+.close, .close-letter {
     position: absolute;
     top: 20px;
     right: 35px;
@@ -249,68 +305,50 @@ h1 {
     z-index: 1000;
 }
 
-.close:hover {
+.close:hover, .close-letter:hover {
     color: #f9a8d4;
     transform: scale(1.2);
 }
 
-/* ===== КНОПКА ДЛЯ ПИСЬМА ===== */
-.letter-button-container {
-    text-align: center;
-    margin: 40px 0; /* отступы сверху и снизу */
-}
-
-.heart-button {
-    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
-    border: none;
-    color: white;
-    padding: 18px 40px;
-    font-size: 1.8rem;
-    font-family: 'Pacifico', cursive; /* красивый шрифт, подключим ниже */
-    border-radius: 50px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 2px solid white;
-    letter-spacing: 2px;
-}
-
-.heart-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+.close-letter {
+    color: #b91c4b;
 }
 
 /* ===== МОДАЛЬНОЕ ОКНО ДЛЯ ПИСЬМА ===== */
 #letterModal .letter-content {
-    background-color: #fff0f5; /* нежно-розовый фон */
+    background-color: #fff0f5;
     max-width: 600px;
     width: 90%;
     max-height: 80vh;
-    overflow-y: auto; /* если текст длинный, появится скролл */
+    overflow-y: auto;
     padding: 40px;
-    border-radius: 30px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    border-radius: 40px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.4);
     position: relative;
-    /* Фон с сердечками (паттерн) */
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.1"><text x="10" y="30" font-size="20">❤️</text><text x="50" y="70" font-size="25">❤️</text><text x="80" y="20" font-size="18">❤️</text><text x="20" y="80" font-size="22">❤️</text></svg>');
-    background-repeat: repeat;
-    background-size: 100px 100px;
-    border: 3px solid #f9a8d4;
+    background-image: 
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.1"><text x="10" y="30" font-size="20">❤️</text><text x="50" y="70" font-size="25">❤️</text><text x="80" y="20" font-size="18">❤️</text><text x="20" y="80" font-size="22">❤️</text></svg>'),
+        linear-gradient(145deg, #fff0f5, #ffe4e6);
+    background-repeat: repeat, no-repeat;
+    background-size: 100px 100px, cover;
+    border: 4px solid #f9a8d4;
+    animation: letterFadeIn 0.6s ease;
 }
 
-/* Стили для текста внутри письма */
+@keyframes letterFadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
 .letter-text {
-    font-family: 'Cormorant Garamond', 'Georgia', 'Times New Roman', serif;
-    font-size: 1.5rem;          /* чуть крупнее */
-    font-weight: 600;            /* полужирный для чёткости */
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-size: 1.5rem;
+    font-weight: 500;
     line-height: 1.8;
-    color: #2c1a1a;              /* более тёмный цвет (был #4a2c2c) */
-    text-shadow: none;           /* убираем тень, если она мешает */
-    background-color: rgba(255, 255, 255, 0.95); /* почти непрозрачный фон */
+    color: #2c1a1a;
+    background-color: rgba(255, 255, 255, 0.8);
     padding: 30px;
-    border-radius: 20px;
-    -webkit-font-smoothing: antialiased;  /* сглаживание для чёткости */
-    -moz-osx-font-smoothing: grayscale;
+    border-radius: 25px;
+    backdrop-filter: blur(2px);
 }
 
 .letter-text h2 {
@@ -323,7 +361,7 @@ h1 {
 
 .letter-text p {
     margin-bottom: 20px;
-    text-indent: 30px; /* красная строка */
+    text-indent: 30px;
 }
 
 .letter-text .signature {
@@ -334,69 +372,68 @@ h1 {
     text-indent: 0;
 }
 
-/* Крестик для закрытия письма */
-.close-letter {
-    position: absolute;
-    top: 20px;
-    right: 35px;
-    color: #b91c4b;
-    font-size: 40px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
-    z-index: 1000;
-}
-
-.close-letter:hover {
-    color: #f9a8d4;
-    transform: scale(1.2);
-}
-
 /* ===== КНОПКА УПРАВЛЕНИЯ МУЗЫКОЙ ===== */
 .music-control {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    width: 50px;
-    height: 50px;
-    background-color: #f9a8d4;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #f9a8d4, #f472b6);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 20px rgba(185, 28, 75, 0.4);
     z-index: 1001;
-    transition: transform 0.3s ease, background-color 0.3s ease;
-    user-select: none;
+    transition: all 0.3s ease;
+    border: 3px solid white;
+}
+
+.music-control.playing::before {
+    content: '';
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(249, 168, 212, 0.4);
+    animation: pulse-ring 1.5s infinite;
+    z-index: -1;
+}
+
+@keyframes pulse-ring {
+    0% { transform: scale(0.8); opacity: 0.7; }
+    100% { transform: scale(1.5); opacity: 0; }
 }
 
 .music-control:hover {
-    transform: scale(1.1);
-    background-color: #f472b6;
+    transform: scale(1.15);
+    box-shadow: 0 12px 30px rgba(185, 28, 75, 0.6);
 }
 
 #musicIcon {
-    font-size: 24px;
+    font-size: 28px;
     color: white;
     line-height: 1;
 }
 
-/* Стили для приветственного окна */
+/* ===== ПРИВЕТСТВЕННОЕ ОКНО ===== */
 #welcomeModal .welcome-content {
     background: #fff0f5;
-    max-width: 450px;
+    max-width: 500px;
     width: 90%;
-    padding: 40px 30px;
-    border-radius: 40px;
+    padding: 50px 40px;
+    border-radius: 60px;
     text-align: center;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-    border: 4px solid #f9a8d4;
-    animation: gentlePop 0.5s ease;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+    border: 5px solid #f9a8d4;
+    animation: gentlePop 0.6s ease;
+    background-image: radial-gradient(circle at 10% 30%, rgba(255,255,255,0.3) 0%, transparent 30%);
 }
 
 @keyframes gentlePop {
-    0% { transform: scale(0.8); opacity: 0; }
+    0% { transform: scale(0.7); opacity: 0; }
     100% { transform: scale(1); opacity: 1; }
 }
 
@@ -433,3 +470,58 @@ h1 {
     transform: scale(1.1);
     box-shadow: 0 8px 20px rgba(0,0,0,0.3);
 }
+
+/* Стилизация полосы прокрутки */
+.memories::-webkit-scrollbar,
+.videos::-webkit-scrollbar {
+    height: 8px;
+}
+.memories::-webkit-scrollbar-track,
+.videos::-webkit-scrollbar-track {
+    background: #ffe4e6;
+    border-radius: 10px;
+}
+.memories::-webkit-scrollbar-thumb,
+.videos::-webkit-scrollbar-thumb {
+    background: #f9a8d4;
+    border-radius: 10px;
+}
+.memories::-webkit-scrollbar-thumb:hover,
+.videos::-webkit-scrollbar-thumb:hover {
+    background: #f472b6;
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 700px) {
+    h1 {
+        font-size: 2.2rem;
+        white-space: normal;
+    }
+    .subtitle {
+        font-size: 1rem;
+    }
+    .heart-button {
+        font-size: 1.4rem;
+        padding: 15px 30px;
+    }
+    .memory-card img, .video-card img {
+        max-height: 50vh;
+    }
+    .video-card::after {
+        font-size: 3rem;
+    }
+    #map {
+        height: 350px;
+    }
+    .music-control {
+        width: 50px;
+        height: 50px;
+        bottom: 15px;
+        right: 15px;
+    }
+    .music-control.playing::before {
+        width: 70px;
+        height: 70px;
+    }
+}
+
